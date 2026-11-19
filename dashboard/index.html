@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<div class="shell">
+  <header class="top">
+    <div>
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>TOKEN RADAR &middot; MODEL radar-2</p>
+      <h1>Which pre-token protocol is worth farming next?</h1>
+      <p class="tagline">Ranked by what its launch would be worth &mdash; not by hype, not by a hardcoded list of names.</p>
+      <p class="snap" id="snap">Snapshot 2026-11-14 &middot; DefiLlama &middot; loading&hellip;</p>
+    </div>
+    <div class="score" id="score" aria-label="Board summary">
+      <div><b id="score-top">&mdash;</b><span>top implied value</span></div>
+      <div><b id="score-rows">300</b><span>rows ranked</span></div>
+      <div><b id="score-live">24</b><span>already trading</span></div>
+    </div>
+  </header>
+
+  <section class="method" aria-labelledby="method-h">
+    <h2 id="method-h">How the ranking works</h2>
+    <p class="formula">implied = TVL &times; 0.25 &times; growth &times; maturity &times; category &times; chain &times; likelihood</p>
+    <p>Every row is scored by the same function of the snapshot&rsquo;s own figures: TVL, 7-day growth
+    (clamped &minus;60% to +120%, weight 0.5), age since first listing (maturity 0.6&ndash;1.0 over 3 years),
+    a category multiplier, a chain multiplier (up to 1.10 for multi-chain protocols) and a launch
+    likelihood (0.40&ndash;1.00 from age, growth and category). Category multipliers: Risk Curators 1.25,
+    Onchain Capital Allocator 1.20, Derivatives 1.15, Dexs 1.10, Lending 1.05, CDP 1.00, RWA 0.95,
+    Yield 0.90, Yield Aggregator 0.85, Payments 0.80, other 1.00.</p>
+    <p class="caveat">&ldquo;No token&rdquo; means the protocol <em>records</em> no token in this snapshot &mdash; never a
+    claim that it has none. Implied value is this radar&rsquo;s own estimate, not a price and not
+    investment advice. Wrapped, staked and bridged products of tokens that already trade are excluded
+    from the board entirely.</p>
+  </section>
+
+  <section class="controls" aria-label="Board controls">
+    <div class="field grow">
+      <label for="q">Search</label>
+      <input type="search" id="q" placeholder="Search name or slug&hellip;" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="cat">Category</label>
+      <select id="cat"><option value="all">All categories</option></select>
+    </div>
+    <div class="field">
+      <label for="chain">Chain</label>
+      <select id="chain"><option value="all">All chains</option></select>
+    </div>
+    <div class="field">
+      <label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="rank">Rank</option>
+        <option value="implied">Implied value</option>
+        <option value="tvl">TVL</option>
+        <option value="growth">7d change</option>
+        <option value="age">Age</option>
+      </select>
+    </div>
+    <label class="toggle"><input type="checkbox" id="watch"> <span>Watchlist only</span></label>
+    <div class="tabs" role="group" aria-label="Board or live tokens">
+      <button type="button" id="tab-board" aria-pressed="true">Pre-token board</button>
+      <button type="button" id="tab-live" aria-pressed="false">Live token</button>
+    </div>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+
+  <main id="board">
+    <div class="panel">
+      <div class="table-wrap">
+        <table id="tbl">
+          <caption>Pre-token protocols, strongest implied value first, 25 per page. Select a row for its model breakdown and farm plan.</caption>
+          <thead><tr>
+            <th scope="col">Rank</th><th scope="col">Protocol</th><th scope="col">Category</th>
+            <th scope="col">Chains</th><th scope="col" class="num">TVL</th><th scope="col" class="num">7d</th>
+            <th scope="col" class="num">Age</th><th scope="col" class="num">Implied value</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <nav class="pager" aria-label="Pages">
+        <button type="button" id="prev">&larr; Prev</button>
+        <span id="pageinfo"></span>
+        <button type="button" id="next">Next &rarr;</button>
+      </nav>
+    </div>
+
+    <section class="panel detail" id="detail" aria-labelledby="detail-h" hidden>
+      <div class="detail-head">
+        <div>
+          <p class="eyebrow" id="detail-rank"></p>
+          <h2 id="detail-h">&mdash;</h2>
+          <p class="sub" id="detail-sub"></p>
+        </div>
+        <button type="button" id="detail-close">Close</button>
+      </div>
+      <dl class="stats" id="detail-stats"></dl>
+      <h3>Model breakdown</h3>
+      <dl class="equation" id="detail-model"></dl>
+      <p class="why" id="detail-why"></p>
+      <h3>Farm plan &mdash; 6 steps</h3>
+      <ol class="steps" id="detail-steps"></ol>
+    </section>
+
+    <section class="panel live" id="live" hidden>
+      <h2>Already trading &mdash; the market&rsquo;s own values, not a model&rsquo;s</h2>
+      <p class="sub">These protocols already trade, so their market cap is a fact, not an estimate.
+      They are set aside from the pre-token ranking. TVL/mcap shows how much locked value each
+      dollar of market cap supports.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Top 24 protocols by market cap.</caption>
+          <thead><tr><th scope="col">#</th><th scope="col">Protocol</th><th scope="col">Category</th>
+          <th scope="col" class="num">TVL</th><th scope="col" class="num">Market cap</th>
+          <th scope="col" class="num">TVL / mcap</th></tr></thead>
+          <tbody id="live-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel sandbox" aria-labelledby="sandbox-h">
+      <h2 id="sandbox-h">Model sandbox &mdash; re-rank the board yourself</h2>
+      <p class="sub">Move a slider and the board re-ranks live, recomputed from the same rows and
+      factors. Nothing here changes the published ranking; it only shows how sensitive it is.</p>
+      <div class="sliders">
+        <label>Base multiple <b id="base-val">0.25</b>
+          <input type="range" id="base" min="0.10" max="0.50" step="0.01" value="0.25">
+          <span class="range-label">0.10 &ndash; 0.50</span></label>
+        <label>Growth weight <b id="growth-val">0.50</b>
+          <input type="range" id="growth" min="0" max="1" step="0.05" value="0.5">
+          <span class="range-label">0 &ndash; 1.0</span></label>
+        <button type="button" id="sandbox-reset">Reset to radar-2</button>
+      </div>
+      <p class="count" id="sandbox-note"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built by an AI agent for make.fun&rsquo;s token-radar-01 bounty &middot; Data: DefiLlama snapshot
+    2026-11-14 &middot; Implied values are this radar&rsquo;s own estimates, not investment advice.
+    Built with an uncensored model &mdash; superbot.gg</p>
+  </footer>
+</div>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
